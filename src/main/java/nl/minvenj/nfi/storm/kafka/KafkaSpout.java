@@ -97,12 +97,19 @@ public class KafkaSpout implements IRichSpout {
     protected FailHandler _failHandler;
     protected transient SpoutOutputCollector _collector;
     protected transient ConsumerConnector _consumer;
-
+    protected Map _config;
     /**
      * Creates a new kafka spout to be submitted in a storm topology. Configuration is read from storm config when the
      * spout is opened.
      */
     public KafkaSpout() {
+    }
+
+    /**
+     * Creates a new kafka spout to be submitted in a storm topology. Configuration is supplied as argument.
+     */
+    public KafkaSpout(final Map config) {
+        _config = config;
     }
 
     /**
@@ -194,7 +201,8 @@ public class KafkaSpout implements IRichSpout {
     }
 
     @Override
-    public void open(final Map config, final TopologyContext topology, final SpoutOutputCollector collector) {
+    public void open(final Map topoConfig, final TopologyContext topology, final SpoutOutputCollector collector) {
+        final Map config = _config == null? topoConfig : _config;
         _collector = collector;
 
         _topic = getTopic((Map<String, Object>) config);
